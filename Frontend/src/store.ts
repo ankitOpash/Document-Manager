@@ -1,67 +1,141 @@
-import { create } from 'zustand';
-import { Document, DocumentsState } from './types';
-import { generateMockDocuments } from './mockData';
-import toast from 'react-hot-toast';
+import { create } from "zustand";
+import toast from "react-hot-toast";
+// import { CreateDocument } from './config/document/documentConfig';
+import {
+  fetchDocuments,
+  CreateDocument,
+  updateDocument,
+  deleteDocument,
+} from "./config/document/documentConfig";
 
-export const useDocumentsStore = create<DocumentsState>((set) => ({
-  documents: generateMockDocuments(),
+export const useDocumentsStore = create<any>((set: any) => ({
+  documents: [], // Start empty to load from the API
   selectedDocument: null,
-  searchQuery: '',
-  sortBy: 'date',
-  sortOrder: 'desc',
+  searchQuery: "",
+  sortBy: "date",
+  sortOrder: "desc",
   currentPage: 1,
   itemsPerPage: 10,
 
-  setDocuments: (documents) => set({ documents }),
-  
-  addDocument: (document) => {
-    const newDoc = {
-      ...document,
-      id: crypto.randomUUID(),
-      createdAt: new Date(),
-      size: document.content.length * 2,
-    };
-    set((state) => ({
-      documents: [...state.documents, newDoc],
-      currentPage: 1, // Reset to first page when adding new document
-    }));
-    toast.success('Document created successfully');
-    return newDoc;
+  // Fetch documents from the API
+  loadDocuments: async () => {
+    try {
+      const documents = await fetchDocuments();
+      set({ documents });
+      // toast.success('Documents loaded successfully');
+    } catch (error) {
+      console.error("Error loading documents:", error);
+      toast.error("Failed to load documents");
+    }
   },
-  
-  updateDocument: (id: string, content: string) => {
-    set((state) => ({
-      documents: state.documents.map((doc) =>
-        doc.id === id
-          ? { ...doc, content, size: content.length * 2 }
-          : doc
-      ),
-      selectedDocument: state.selectedDocument?.id === id
-        ? { ...state.selectedDocument, content, size: content.length * 2 }
-        : state.selectedDocument,
-    }));
-    toast.success('Document saved successfully');
+
+  // Add a new document using the API
+  addDocument: async (document: any) => {
+    try {
+      const newDoc = await CreateDocument(document);
+      set((state: any) => ({
+        documents: [...state.documents, newDoc],
+        currentPage: 1, // Reset to first page
+      }));
+      toast.success("Document created successfully");
+      return newDoc;
+    } catch (error) {
+      console.error("Error creating document:", error);
+      toast.error("Failed to create document");
+    }
   },
-  
-  deleteDocument: (id) => {
-    set((state) => {
-      const newDocuments = state.documents.filter((doc) => doc.id !== id);
-      const totalPages = Math.ceil(newDocuments.length / state.itemsPerPage);
-      const newCurrentPage = Math.min(state.currentPage, totalPages);
-      
-      return {
-        documents: newDocuments,
-        selectedDocument: state.selectedDocument?.id === id ? null : state.selectedDocument,
-        currentPage: newCurrentPage,
-      };
-    });
-    toast.success('Document deleted successfully');
+
+  // Update a document using the API
+  // updateDocument: async (id: string, data: any) => {
+  //   try {
+  //     //@ts-ignore
+  //     console.log(data);
+
+  //     const{name,content}=data
+  //     const updatedDoc = await updateDocument(id,  { name,content });
+  //     set((state:any) => ({
+  //       documents: state.documents.map((doc:any) =>
+  //         doc.id === id ? { ...doc, content: updatedDoc.content, size: content.length * 2 } : doc
+  //       ),
+  //       selectedDocument:
+  //         state.selectedDocument?.id === id
+  //           ? { ...state.selectedDocument, content: updatedDoc.content, size: content.length * 2 }
+  //           : state.selectedDocument,
+  //     }));
+  //     toast.success('Document updated successfully');
+  //   } catch (error) {
+  //     console.error('Error updating document:', error);
+  //     toast.error('Failed to update document');
+  //   }
+  // },
+  updateDocument: async (id: string, data: any) => {
+    try {
+      //@ts-ignore
+      // console.log(data);
+
+      const { name, content } = data; // Extract both name and content
+
+      // Update the document by passing both 'name' and 'content'
+      const updatedDoc = await updateDocument(id, { name, content });
+
+      set((state: any) => ({
+        documents: state.documents.map((doc: any) =>
+          doc.id === id
+            ? {
+                ...doc,
+                name: updatedDoc.name,
+                content: updatedDoc.content,
+                size: updatedDoc.content.length * 2,
+              }
+            : doc
+        ),
+        selectedDocument:
+          state.selectedDocument?.id === id
+            ? {
+                ...state.selectedDocument,
+                name: updatedDoc.name,
+                content: updatedDoc.content,
+                size: updatedDoc.content.length * 2,
+              }
+            : state.selectedDocument,
+      }));
+
+      toast.success("Document updated successfully");
+    } catch (error) {
+      console.error("Error updating document:", error);
+      toast.error("Failed to update document");
+    }
   },
-  
-  setSelectedDocument: (document) => set({ selectedDocument: document }),
-  setSearchQuery: (searchQuery) => set({ searchQuery, currentPage: 1 }),
-  setSortBy: (sortBy) => set({ sortBy }),
-  setSortOrder: (order) => set({ sortOrder }),
-  setCurrentPage: (currentPage) => set({ currentPage }),
-  setItemsPerPage: (itemsPerPage) => set({ itemsPerPage, currentPage: 1 }),
+
+  // Delete a document using the API
+  deleteDocument: async (id: string) => {
+    try {
+      await deleteDocument(id);
+      set((state: any) => {
+        const newDocuments = state.documents.filter(
+          (doc: any) => doc.id !== id
+        );
+        const totalPages = Math.ceil(newDocuments.length / state.itemsPerPage);
+        const newCurrentPage = Math.min(state.currentPage, totalPages);
+
+        return {
+          documents: newDocuments,
+          selectedDocument:
+            state.selectedDocument?.id === id ? null : state.selectedDocument,
+          currentPage: newCurrentPage,
+        };
+      });
+      toast.success("Document deleted successfully");
+    } catch (error) {
+      console.error("Error deleting document:", error);
+      toast.error("Failed to delete document");
+    }
+  },
+
+  setSelectedDocument: (document: any) => set({ selectedDocument: document }),
+  setSearchQuery: (searchQuery: any) => set({ searchQuery, currentPage: 1 }),
+  setSortBy: (sortBy: any) => set({ sortBy }),
+  setSortOrder: (order: any) => set({ sortOrder: order }),
+  setCurrentPage: (currentPage: any) => set({ currentPage }),
+  setItemsPerPage: (itemsPerPage: any) => set({ itemsPerPage, currentPage: 1 }),
 }));

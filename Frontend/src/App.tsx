@@ -1,12 +1,19 @@
-import React from 'react';
+
 import { DocumentList } from './components/DocumentList';
 import { DocumentEditor } from './components/DocumentEditor';
 import { SearchBar } from './components/SearchBar';
 import { NewDocumentButton } from './components/NewDocumentButton';
 import { useDocumentsStore } from './store';
 import { Toaster } from 'react-hot-toast';
+import { useEffect } from 'react';
 
 function App() {
+
+  const {  loadDocuments } = useDocumentsStore();
+
+  useEffect(() => {
+    loadDocuments();
+  }, []);
   const { selectedDocument } = useDocumentsStore();
 
   return (

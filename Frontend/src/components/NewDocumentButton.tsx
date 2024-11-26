@@ -3,11 +3,13 @@ import { Plus } from 'lucide-react';
 import { useDocumentsStore } from '../store';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+// import { useCreateDocument } from './hooks/useCreateDocument';
 
 export const NewDocumentButton: React.FC = () => {
   const [isCreating, setIsCreating] = useState(false);
   const [name, setName] = useState('');
   const { addDocument, setSelectedDocument } = useDocumentsStore();
+  // const createDocumentMutation = useCreateDocument();
 
   const editor = useEditor({
     extensions: [StarterKit],
@@ -22,16 +24,21 @@ export const NewDocumentButton: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (name.trim() && editor) {
+      //@ts-ignore
       const newDoc = addDocument({
         name: name.endsWith('.txt') ? name : `${name}.txt`,
         content: editor.getHTML(),
       });
+
+      // Reset modal state and cleanup editor
       setName('');
       editor.commands.setContent('');
-      setIsCreating(false);
-      setSelectedDocument(newDoc);
+      setIsCreating(false); // Ensure this runs after other updates
+      //setSelectedDocument(newDoc);
     }
   };
+
+
 
   return (
     <>
