@@ -19,10 +19,10 @@ app = FastAPI(title="Document Management System API")
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origin_regex="https?://.*",  # Match any HTTP or HTTPS origin
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],  # Allow all HTTP methods
+    allow_headers=["*"],  # Allow all headers
 )
 
 @app.get("/api/documents", response_model=List[DocumentResponse])
