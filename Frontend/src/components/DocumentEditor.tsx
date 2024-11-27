@@ -5,6 +5,7 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { Save, X, Check, Edit2 } from "lucide-react";
 import { useDocumentsStore } from "../store";
+import MenuBar from "./MenuBar";
 
 export const DocumentEditor: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
@@ -78,11 +79,10 @@ export const DocumentEditor: React.FC = () => {
             <button
               onClick={handleSave}
               disabled={isSaving}
-              className={`p-2 rounded-full transition-colors flex items-center ${
-                isSaving
-                  ? "bg-green-50 text-green-600"
-                  : "hover:bg-gray-100 text-gray-600 hover:text-green-600"
-              }`}
+              className={`p-2 rounded-full transition-colors flex items-center ${isSaving
+                ? "bg-green-50 text-green-600"
+                : "hover:bg-gray-100 text-gray-600 hover:text-green-600"
+                }`}
               title={isSaving ? "Saving..." : "Save"}
             >
               {isSaving ? (
@@ -101,8 +101,12 @@ export const DocumentEditor: React.FC = () => {
             </button>
           </div>
         </div>
-        <div className="flex-1 overflow-auto">
-          <EditorContent editor={editor} />
+        <div className="px-2 py-2 mb-2 overflow-auto">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Content
+          </label>
+          <MenuBar editor={editor} />
+          <EditorContent editor={editor} className="overflow-auto max-h-[200px] border rounded-md  scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200" />
         </div>
       </div>
     </div>

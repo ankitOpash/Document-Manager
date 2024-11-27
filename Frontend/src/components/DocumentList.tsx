@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { format } from "date-fns";
-import { ArrowUpDown, File, Trash2, FilePenLine } from "lucide-react";
+import { ArrowUpDown, File, Trash2, FilePenLine, FolderOpen } from "lucide-react";
 import { useDocumentsStore } from "../store";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { Pagination } from "./Pagination";
@@ -65,88 +65,96 @@ export const DocumentList: React.FC = () => {
 
   return (
     <>
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                <button
-                  className="flex items-center space-x-1 hover:text-gray-700"
-                  onClick={() => toggleSort("name")}
+      {paginatedDocuments.length > 0 ? (
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  <span>Name</span>
-                  <ArrowUpDown className="h-4 w-4" />
-                </button>
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                <button
-                  className="flex items-center space-x-1 hover:text-gray-700"
-                  onClick={() => toggleSort("date")}
+                  <button
+                    className="flex items-center space-x-1 hover:text-gray-700"
+                    onClick={() => toggleSort("name")}
+                  >
+                    <span>Name</span>
+                    <ArrowUpDown className="h-4 w-4" />
+                  </button>
+                </th>
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  <span>Created</span>
-                  <ArrowUpDown className="h-4 w-4" />
-                </button>
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Size
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {paginatedDocuments.map((document) => (
-              <tr key={document.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
                   <button
-                    className="flex items-center text-sm font-medium text-gray-900 hover:text-indigo-600"
-                    onClick={() => setSelectedDocument(document)}
+                    className="flex items-center space-x-1 hover:text-gray-700"
+                    onClick={() => toggleSort("date")}
                   >
-                    <File className="h-4 w-4 mr-2" />
-                    {document.name}
+                    <span>Created</span>
+                    <ArrowUpDown className="h-4 w-4" />
                   </button>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {document.created_at
-                    ? format(new Date(document.created_at), "PPp")
-                    : "Invalid Date"}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {formatFileSize(document.size)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <button
-                    onClick={() => setDeleteConfirmId(document.id)}
-                    className="text-red-600 hover:text-red-900 transition-colors mr-2"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-
-                  <button
-                    onClick={() => setSelectedDocument(document)}
-                    className="text-blue-600 hover:text-blue-900 transition-colors"
-                  >
-                    <FilePenLine className="h-4 w-4" />
-                  </button>
-                </td>
+                </th>
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Size
+                </th>
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Actions
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {paginatedDocuments.map((document) => (
+                <tr key={document.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <button
+                      className="flex items-center text-sm font-medium text-gray-900 hover:text-indigo-600"
+                      onClick={() => setSelectedDocument(document)}
+                    >
+                      <File className="h-4 w-4 mr-2" />
+                      {document.name}
+                    </button>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {document.created_at
+                      ? format(new Date(document.created_at), "PPp")
+                      : "Invalid Date"}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {formatFileSize(document.size)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <button
+                      onClick={() => setDeleteConfirmId(document.id)}
+                      className="text-red-600 hover:text-red-900 transition-colors mr-2"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+
+                    <button
+                      onClick={() => setSelectedDocument(document)}
+                      className="text-blue-600 hover:text-blue-900 transition-colors"
+                    >
+                      <FilePenLine className="h-4 w-4" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center h-64">
+          <FolderOpen className="h-16 w-16 text-gray-400" />
+          <p className="mt-4 text-lg font-medium text-gray-600">No documents found</p>
+          <p className="text-gray-500">Create a new document to get started!</p>
+        </div>
+      )}
 
       <Pagination totalItems={filteredDocuments.length} />
 

@@ -16,21 +16,28 @@ export const useDocumentsStore = create<any>((set: any) => ({
   sortOrder: "desc",
   currentPage: 1,
   itemsPerPage: 10,
+  loading: false,
+
+  setLoading: (isLoading: boolean) => set({ loading: isLoading }),
 
   // Fetch documents from the API
   loadDocuments: async () => {
+    set({ loading: true });
     try {
       const documents = await fetchDocuments();
       set({ documents });
       // toast.success('Documents loaded successfully');
     } catch (error) {
       console.error("Error loading documents:", error);
-      toast.error("Failed to load documents");
+     // toast.error("Failed to load documents");
+    } finally {
+      set({ loading: false }); // End loading
     }
   },
 
   // Add a new document using the API
   addDocument: async (document: any) => {
+    set({ loading: true });
     try {
       const newDoc = await CreateDocument(document);
       set((state: any) => ({
@@ -42,6 +49,8 @@ export const useDocumentsStore = create<any>((set: any) => ({
     } catch (error) {
       console.error("Error creating document:", error);
       toast.error("Failed to create document");
+    } finally {
+      set({ loading: false }); // End loading
     }
   },
 
@@ -69,6 +78,7 @@ export const useDocumentsStore = create<any>((set: any) => ({
   //   }
   // },
   updateDocument: async (id: string, data: any) => {
+    set({ loading: true });
     try {
       //@ts-ignore
       // console.log(data);
@@ -104,11 +114,14 @@ export const useDocumentsStore = create<any>((set: any) => ({
     } catch (error) {
       console.error("Error updating document:", error);
       toast.error("Failed to update document");
+    } finally {
+      set({ loading: false }); // End loading
     }
   },
 
   // Delete a document using the API
   deleteDocument: async (id: string) => {
+    set({ loading: true });
     try {
       await deleteDocument(id);
       set((state: any) => {
@@ -129,6 +142,8 @@ export const useDocumentsStore = create<any>((set: any) => ({
     } catch (error) {
       console.error("Error deleting document:", error);
       toast.error("Failed to delete document");
+    } finally {
+      set({ loading: false }); // End loading
     }
   },
 

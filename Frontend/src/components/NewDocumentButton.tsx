@@ -3,12 +3,13 @@ import { Plus } from 'lucide-react';
 import { useDocumentsStore } from '../store';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import MenuBar from './MenuBar';
 // import { useCreateDocument } from './hooks/useCreateDocument';
 
 export const NewDocumentButton: React.FC = () => {
   const [isCreating, setIsCreating] = useState(false);
   const [name, setName] = useState('');
-  const { addDocument, setSelectedDocument } = useDocumentsStore();
+  const { addDocument, loading } = useDocumentsStore();
   // const createDocumentMutation = useCreateDocument();
 
   const editor = useEditor({
@@ -67,24 +68,28 @@ export const NewDocumentButton: React.FC = () => {
                   placeholder="Enter document name"
                   className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   autoFocus
+                  disabled={loading}
                 />
               </div>
-              <div className="mb-4">
+              <div className="mb-4 overflow-auto">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Content
                 </label>
-                <EditorContent editor={editor} />
+                <MenuBar editor={editor} />
+                <EditorContent editor={editor} className="overflow-auto max-h-[200px] border rounded-md  scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200" />
               </div>
               <div className="flex justify-end space-x-2">
                 <button
                   type="button"
                   onClick={() => setIsCreating(false)}
+                  disabled={loading}
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
+                  disabled={loading}
                   className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                   Create

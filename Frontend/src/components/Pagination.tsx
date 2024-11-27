@@ -8,16 +8,26 @@ interface PaginationProps {
 
 export const Pagination: React.FC<PaginationProps> = ({ totalItems }) => {
   const { currentPage, itemsPerPage, setCurrentPage, setItemsPerPage } = useDocumentsStore();
-  
+
   const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const startItem = (currentPage - 1) * itemsPerPage + 1;
-  const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+  const startItem = totalItems === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
+  const endItem = totalItems === 0 ? 0 : Math.min(currentPage * itemsPerPage, totalItems);
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
     }
   };
+
+  if (totalItems === 0) {
+    return (
+      <div className="flex justify-center items-center py-4">
+        <p className="text-sm font-medium text-gray-500">
+          No results found
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center justify-between px-4 py-3 sm:px-6">
