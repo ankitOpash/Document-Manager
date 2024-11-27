@@ -22,7 +22,7 @@ export const useDocumentsStore = create<any>((set: any) => ({
 
   // Fetch documents from the API
   loadDocuments: async () => {
-    set({ loading: true });
+   // set({ loading: true });
     try {
       const documents = await fetchDocuments();
       set({ documents });
@@ -31,7 +31,7 @@ export const useDocumentsStore = create<any>((set: any) => ({
       console.error("Error loading documents:", error);
      // toast.error("Failed to load documents");
     } finally {
-      set({ loading: false }); // End loading
+     // set({ loading: false }); // End loading
     }
   },
 
